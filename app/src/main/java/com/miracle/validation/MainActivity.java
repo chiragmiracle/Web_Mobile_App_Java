@@ -9,6 +9,7 @@ import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.URLUtil;
 import android.webkit.WebResourceRequest;
@@ -22,7 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
-    private String URL = "https://twinr.dev/";
+    private String URL = "https://www.google.co.in/";
     private WebView ll_webview;
     private ConnectivityManager.NetworkCallback networkCallback;
     SwipeRefreshLayout refreshLayout;
@@ -51,7 +52,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url, contentDisposition, mimetype));
             DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
             dm.enqueue(request);
-            Toast.makeText(getApplicationContext(), "Downloading File", Toast.LENGTH_LONG).show();
+            Log.e("MIRACLE", "Downloading File: " );
+//            Toast.makeText(getApplicationContext(), "Downloading File", Toast.LENGTH_LONG).show();
         });
 
         if (isNetworkAvailable()) {
