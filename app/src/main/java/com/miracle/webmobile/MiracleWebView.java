@@ -1,4 +1,4 @@
-package com.miracle.validation;
+package com.miracle.webmobile;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -52,7 +52,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
-@SuppressWarnings("deprecation")
 public class MiracleWebView extends WebView {
 
     public interface Listener {
@@ -72,21 +71,12 @@ public class MiracleWebView extends WebView {
     protected static final String DATABASES_SUB_FOLDER = "/databases";
     protected static final String LANGUAGE_DEFAULT_ISO3 = "eng";
     protected static final String CHARSET_DEFAULT = "UTF-8";
-    /**
-     * Alternative browsers that have their own rendering engine and *may* be installed on this device
-     */
     protected static final String[] ALTERNATIVE_BROWSERS = new String[]{"org.mozilla.firefox", "com.android.chrome", "com.opera.browser", "org.mozilla.firefox_beta", "com.chrome.beta", "com.opera.browser.beta"};
     protected WeakReference<Activity> mActivity;
     protected WeakReference<Fragment> mFragment;
     protected Listener mListener;
     protected final List<String> mPermittedHostnames = new LinkedList<String>();
-    /**
-     * File upload callback for platform versions prior to Android 5.0
-     */
     protected ValueCallback<Uri> mFileUploadCallbackFirst;
-    /**
-     * File upload callback for Android 5.0+
-     */
     protected ValueCallback<Uri[]> mFileUploadCallbackSecond;
     protected long mLastError;
     protected String mLanguageIso3;
@@ -185,50 +175,23 @@ public class MiracleWebView extends WebView {
         mUploadableFileTypes = mimeType;
     }
 
-    /**
-     * Loads and displays the provided HTML source text
-     *
-     * @param html the HTML source text to load
-     */
     public void loadHtml(final String html) {
         loadHtml(html, null);
     }
 
-    /**
-     * Loads and displays the provided HTML source text
-     *
-     * @param html    the HTML source text to load
-     * @param baseUrl the URL to use as the page's base URL
-     */
     public void loadHtml(final String html, final String baseUrl) {
         loadHtml(html, baseUrl, null);
     }
 
-    /**
-     * Loads and displays the provided HTML source text
-     *
-     * @param html       the HTML source text to load
-     * @param baseUrl    the URL to use as the page's base URL
-     * @param historyUrl the URL to use for the page's history entry
-     */
     public void loadHtml(final String html, final String baseUrl, final String historyUrl) {
         loadHtml(html, baseUrl, historyUrl, "utf-8");
     }
 
-    /**
-     * Loads and displays the provided HTML source text
-     *
-     * @param html       the HTML source text to load
-     * @param baseUrl    the URL to use as the page's base URL
-     * @param historyUrl the URL to use for the page's history entry
-     * @param encoding   the encoding or charset of the HTML source text
-     */
     public void loadHtml(final String html, final String baseUrl, final String historyUrl, final String encoding) {
         loadDataWithBaseURL(baseUrl, html, "text/html", encoding, historyUrl);
     }
 
     @SuppressLint("NewApi")
-    @SuppressWarnings("all")
     public void onResume() {
         if (Build.VERSION.SDK_INT >= 11) {
             super.onResume();
@@ -237,7 +200,6 @@ public class MiracleWebView extends WebView {
     }
 
     @SuppressLint("NewApi")
-    @SuppressWarnings("all")
     public void onPause() {
         pauseTimers();
         if (Build.VERSION.SDK_INT >= 11) {
@@ -246,19 +208,16 @@ public class MiracleWebView extends WebView {
     }
 
     public void onDestroy() {
-        // try to remove this view from its parent first
         try {
             ((ViewGroup) getParent()).removeView(this);
         } catch (Exception ignored) {
         }
 
-        // then try to remove all child views from this view
         try {
             removeAllViews();
         } catch (Exception ignored) {
         }
 
-        // and finally destroy this view
         destroy();
     }
 
@@ -307,31 +266,10 @@ public class MiracleWebView extends WebView {
         }
     }
 
-    /**
-     * Adds an additional HTTP header that will be sent along with every HTTP `GET` request
-     * <p>
-     * This does only affect the main requests, not the requests to included resources (e.g. images)
-     * <p>
-     * If you later want to delete an HTTP header that was previously added this way, call `removeHttpHeader()`
-     * <p>
-     * The `WebView` implementation may in some cases overwrite headers that you set or unset
-     *
-     * @param name  the name of the HTTP header to add
-     * @param value the value of the HTTP header to send
-     */
     public void addHttpHeader(final String name, final String value) {
         mHttpHeaders.put(name, value);
     }
 
-    /**
-     * Removes one of the HTTP headers that have previously been added via `addHttpHeader()`
-     * <p>
-     * If you want to unset a pre-defined header, set it to an empty string with `addHttpHeader()` instead
-     * <p>
-     * The `WebView` implementation may in some cases overwrite headers that you set or unset
-     *
-     * @param name the name of the HTTP header to remove
-     */
     public void removeHttpHeader(final String name) {
         mHttpHeaders.remove(name);
     }
@@ -373,7 +311,6 @@ public class MiracleWebView extends WebView {
         }
     }
 
-    @SuppressWarnings("static-method")
     public void setCookiesEnabled(final boolean enabled) {
         CookieManager.getInstance().setAcceptCookie(enabled);
     }
@@ -389,7 +326,6 @@ public class MiracleWebView extends WebView {
         setMixedContentAllowed(getSettings(), allowed);
     }
 
-    @SuppressWarnings("static-method")
     @SuppressLint("NewApi")
     protected void setMixedContentAllowed(final WebSettings webSettings, final boolean allowed) {
         if (Build.VERSION.SDK_INT >= 21) {
@@ -416,9 +352,7 @@ public class MiracleWebView extends WebView {
 
     @SuppressLint({"SetJavaScriptEnabled"})
     protected void init(Context context) {
-        // in IDE's preview mode
         if (isInEditMode()) {
-            // do not run the code from this method
             return;
         }
 
@@ -500,21 +434,15 @@ public class MiracleWebView extends WebView {
             @Override
             public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
                 if (!isPermittedUrl(url)) {
-                    // if a listener is available
                     if (mListener != null) {
-                        // inform the listener about the request
                         mListener.onExternalPageRequest(url);
                     }
 
-                    // cancel the original request
                     return true;
                 }
 
-                // if there is a user-specified handler available
                 if (mCustomWebViewClient != null) {
-                    // if the user-specified handler asks to override the request
                     if (mCustomWebViewClient.shouldOverrideUrlLoading(view, url)) {
-                        // cancel the original request
                         return true;
                     }
                 }
@@ -550,15 +478,12 @@ public class MiracleWebView extends WebView {
                         } catch (ActivityNotFoundException ignored) {
                         }
 
-                        // cancel the original request
                         return true;
                     }
                 }
 
-                // route the request through the custom URL loading method
                 view.loadUrl(url);
 
-                // cancel the original request
                 return true;
             }
 
@@ -572,7 +497,6 @@ public class MiracleWebView extends WebView {
             }
 
             @SuppressLint("NewApi")
-            @SuppressWarnings("all")
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
                 if (Build.VERSION.SDK_INT >= 11) {
                     if (mCustomWebViewClient != null) {
@@ -586,7 +510,6 @@ public class MiracleWebView extends WebView {
             }
 
             @SuppressLint("NewApi")
-            @SuppressWarnings("all")
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 if (Build.VERSION.SDK_INT >= 21) {
                     if (mCustomWebViewClient != null) {
@@ -627,7 +550,6 @@ public class MiracleWebView extends WebView {
             }
 
             @SuppressLint("NewApi")
-            @SuppressWarnings("all")
             public void onReceivedClientCertRequest(WebView view, ClientCertRequest request) {
                 if (Build.VERSION.SDK_INT >= 21) {
                     if (mCustomWebViewClient != null) {
@@ -665,19 +587,6 @@ public class MiracleWebView extends WebView {
                 }
             }
 
-//			@SuppressLint("NewApi")
-//			@SuppressWarnings("all")
-//			public void onUnhandledInputEvent(WebView view, InputEvent event) {
-//				if (Build.VERSION.SDK_INT >= 21) {
-//					if (mCustomWebViewClient != null) {
-//						mCustomWebViewClient.onUnhandledInputEvent(view, event);
-//					}
-//					else {
-//						super.onUnhandledInputEvent(view, event);
-//					}
-//				}
-//			}
-
             @Override
             public void onScaleChanged(WebView view, float oldScale, float newScale) {
                 if (mCustomWebViewClient != null) {
@@ -688,7 +597,6 @@ public class MiracleWebView extends WebView {
             }
 
             @SuppressLint("NewApi")
-            @SuppressWarnings("all")
             public void onReceivedLoginRequest(WebView view, String realm, String account, String args) {
                 if (Build.VERSION.SDK_INT >= 12) {
                     if (mCustomWebViewClient != null) {
@@ -702,26 +610,18 @@ public class MiracleWebView extends WebView {
         });
 
         super.setWebChromeClient(new WebChromeClient() {
-
-            // file upload callback (Android 2.2 (API level 8) -- Android 2.3 (API level 10)) (hidden method)
-            @SuppressWarnings("unused")
             public void openFileChooser(ValueCallback<Uri> uploadMsg) {
                 openFileChooser(uploadMsg, null);
             }
 
-            // file upload callback (Android 3.0 (API level 11) -- Android 4.0 (API level 15)) (hidden method)
             public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
                 openFileChooser(uploadMsg, acceptType, null);
             }
 
-            // file upload callback (Android 4.1 (API level 16) -- Android 4.3 (API level 18)) (hidden method)
-            @SuppressWarnings("unused")
             public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
                 openFileInput(uploadMsg, null, false);
             }
 
-            // file upload callback (Android 5.0 (API level 21) -- current) (public method)
-            @SuppressWarnings("all")
             public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
                 if (Build.VERSION.SDK_INT >= 21) {
                     final boolean allowMultiple = fileChooserParams.getMode() == FileChooserParams.MODE_OPEN_MULTIPLE;
@@ -780,7 +680,6 @@ public class MiracleWebView extends WebView {
             }
 
             @SuppressLint("NewApi")
-            @SuppressWarnings("all")
             public void onShowCustomView(View view, int requestedOrientation, CustomViewCallback callback) {
                 if (Build.VERSION.SDK_INT >= 14) {
                     if (mCustomWebChromeClient != null) {
@@ -886,7 +785,6 @@ public class MiracleWebView extends WebView {
             }
 
             @SuppressLint("NewApi")
-            @SuppressWarnings("all")
             public void onPermissionRequest(PermissionRequest request) {
                 if (Build.VERSION.SDK_INT >= 21) {
                     if (mCustomWebChromeClient != null) {
@@ -898,7 +796,6 @@ public class MiracleWebView extends WebView {
             }
 
             @SuppressLint("NewApi")
-            @SuppressWarnings("all")
             public void onPermissionRequestCanceled(PermissionRequest request) {
                 if (Build.VERSION.SDK_INT >= 21) {
                     if (mCustomWebChromeClient != null) {
@@ -971,17 +868,6 @@ public class MiracleWebView extends WebView {
                     super.onExceededDatabaseQuota(url, databaseIdentifier, quota, estimatedDatabaseSize, totalQuota, quotaUpdater);
                 }
             }
-
-//			@Override
-//			public void onReachedMaxAppCacheSize(long requiredStorage, long quota, QuotaUpdater quotaUpdater) {
-//				if (mCustomWebChromeClient != null) {
-//					mCustomWebChromeClient.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater);
-//				}
-//				else {
-//					super.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater);
-//				}
-//			}
-
         });
 
         setDownloadListener(new DownloadListener() {
@@ -1054,53 +940,37 @@ public class MiracleWebView extends WebView {
     }
 
     public boolean isPermittedUrl(final String url) {
-        // if the permitted hostnames have not been restricted to a specific set
         if (mPermittedHostnames.size() == 0) {
-            // all hostnames are allowed
             return true;
         }
 
         final Uri parsedUrl = Uri.parse(url);
 
-        // get the hostname of the URL that is to be checked
         final String actualHost = parsedUrl.getHost();
 
-        // if the hostname could not be determined, usually because the URL has been invalid
         if (actualHost == null) {
             return false;
         }
 
-        // if the host contains invalid characters (e.g. a backslash)
         if (!actualHost.matches("^[a-zA-Z0-9._!~*')(;:&=+$,%\\[\\]-]*$")) {
-            // prevent mismatches between interpretations by `Uri` and `WebView`, e.g. for `http://evil.example.com\.good.example.com/`
             return false;
         }
 
-        // get the user information from the authority part of the URL that is to be checked
         final String actualUserInformation = parsedUrl.getUserInfo();
 
-        // if the user information contains invalid characters (e.g. a backslash)
         if (actualUserInformation != null && !actualUserInformation.matches("^[a-zA-Z0-9._!~*')(;:&=+$,%-]*$")) {
-            // prevent mismatches between interpretations by `Uri` and `WebView`, e.g. for `http://evil.example.com\@good.example.com/`
             return false;
         }
 
-        // for every hostname in the set of permitted hosts
         for (String expectedHost : mPermittedHostnames) {
-            // if the two hostnames match or if the actual host is a subdomain of the expected host
             if (actualHost.equals(expectedHost) || actualHost.endsWith("." + expectedHost)) {
-                // the actual hostname of the URL to be checked is allowed
                 return true;
             }
         }
 
-        // the actual hostname of the URL to be checked is not allowed since there were no matches
         return false;
     }
 
-    /**
-     * @deprecated use `isPermittedUrl` instead
-     */
     protected boolean isHostnameAllowed(final String url) {
         return isPermittedUrl(url);
     }
@@ -1121,11 +991,6 @@ public class MiracleWebView extends WebView {
         }
     }
 
-    /**
-     * Provides localizations for the 25 most widely spoken languages that have a ISO 639-2/T code
-     *
-     * @return the label for the file upload prompts as a string
-     */
     protected String getFileUploadPromptLabel() {
         try {
             if (mLanguageIso3.equals("zho")) return decodeBase64("6YCJ5oup5LiA5Liq5paH5Lu2");
@@ -1170,8 +1035,6 @@ public class MiracleWebView extends WebView {
                 return decodeBase64("4KqP4KqVIOCqq+CqvuCqh+CqsuCqqOCrhyDgqqrgqrjgqoLgqqY=");
         } catch (Exception ignored) {
         }
-
-        // return English translation by default
         return "Choose a file";
     }
 
@@ -1210,23 +1073,10 @@ public class MiracleWebView extends WebView {
         }
     }
 
-    /**
-     * Returns whether file uploads can be used on the current device (generally all platform versions except for 4.4)
-     *
-     * @return whether file uploads can be used
-     */
     public static boolean isFileUploadAvailable() {
         return isFileUploadAvailable(false);
     }
 
-    /**
-     * Returns whether file uploads can be used on the current device (generally all platform versions except for 4.4)
-     * <p>
-     * On Android 4.4.3/4.4.4, file uploads may be possible but will come with a wrong MIME type
-     *
-     * @param needsCorrectMimeType whether a correct MIME type is required for file uploads or `application/octet-stream` is acceptable
-     * @return whether file uploads can be used
-     */
     public static boolean isFileUploadAvailable(final boolean needsCorrectMimeType) {
         if (Build.VERSION.SDK_INT == 19) {
             final String platformVersion = (Build.VERSION.RELEASE == null) ? "" : Build.VERSION.RELEASE;
@@ -1237,19 +1087,6 @@ public class MiracleWebView extends WebView {
         }
     }
 
-    /**
-     * Handles a download by loading the file from `fromUrl` and saving it to `toFilename` on the external storage
-     * <p>
-     * This requires the two permissions `android.permission.INTERNET` and `android.permission.WRITE_EXTERNAL_STORAGE`
-     * <p>
-     * Only supported on API level 9 (Android 2.3) and above
-     *
-     * @param context    a valid `Context` reference
-     * @param fromUrl    the URL of the file to download, e.g. the one from `AdvancedWebView.onDownloadRequested(...)`
-     * @param toFilename the name of the destination file where the download should be saved, e.g. `myImage.jpg`
-     * @return whether the download has been successfully handled or not
-     * @throws IllegalStateException if the storage or the target directory could not be found or accessed
-     */
     @SuppressLint("NewApi")
     public static boolean handleDownload(final Context context, final String fromUrl, final String toFilename) {
         if (Build.VERSION.SDK_INT < 9) {
@@ -1275,12 +1112,8 @@ public class MiracleWebView extends WebView {
             }
 
             return true;
-        }
-        // if the download manager app has been disabled on the device
-        catch (IllegalArgumentException e) {
-            // show the settings screen where the user can enable the download manager app again
+        } catch (IllegalArgumentException e) {
             openAppSettings(context, MiracleWebView.PACKAGE_NAME_DOWNLOAD_MANAGER);
-
             return false;
         }
     }
@@ -1304,32 +1137,14 @@ public class MiracleWebView extends WebView {
         }
     }
 
-    /**
-     * Wrapper for methods related to alternative browsers that have their own rendering engines
-     */
     public static class Browsers {
 
-        /**
-         * Package name of an alternative browser that is installed on this device
-         */
         private static String mAlternativePackage;
 
-        /**
-         * Returns whether there is an alternative browser with its own rendering engine currently installed
-         *
-         * @param context a valid `Context` reference
-         * @return whether there is an alternative browser or not
-         */
         public static boolean hasAlternative(final Context context) {
             return getAlternative(context) != null;
         }
 
-        /**
-         * Returns the package name of an alternative browser with its own rendering engine or `null`
-         *
-         * @param context a valid `Context` reference
-         * @return the package name or `null`
-         */
         public static String getAlternative(final Context context) {
             if (mAlternativePackage != null) {
                 return mAlternativePackage;
@@ -1353,23 +1168,10 @@ public class MiracleWebView extends WebView {
             return null;
         }
 
-        /**
-         * Opens the given URL in an alternative browser
-         *
-         * @param context a valid `Activity` reference
-         * @param url     the URL to open
-         */
         public static void openUrl(final Activity context, final String url) {
             openUrl(context, url, false);
         }
 
-        /**
-         * Opens the given URL in an alternative browser
-         *
-         * @param context           a valid `Activity` reference
-         * @param url               the URL to open
-         * @param withoutTransition whether to switch to the browser `Activity` without a transition
-         */
         public static void openUrl(final Activity context, final String url, final boolean withoutTransition) {
             final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             intent.setPackage(getAlternative(context));
