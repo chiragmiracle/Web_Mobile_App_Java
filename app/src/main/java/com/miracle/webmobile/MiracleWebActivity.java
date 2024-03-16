@@ -49,6 +49,7 @@ public class MiracleWebActivity extends AppCompatActivity implements MiracleWebV
     private ConnectivityManager.NetworkCallback networkCallback;
     SwipeRefreshLayout refreshLayout;
 
+    @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,13 +126,10 @@ public class MiracleWebActivity extends AppCompatActivity implements MiracleWebV
     }
 
     private void askNotificationPermission() {
-        // This is only necessary for API Level > 33 (TIRAMISU)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
                     PackageManager.PERMISSION_GRANTED) {
-                // FCM SDK (and your app) can post notifications.
             } else {
-                // Directly ask for the permission
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
             }
         }
