@@ -19,7 +19,7 @@
         android:theme="@style/Theme.MyDemoApp"
         tools:targetApi="31">
         <activity
-            android:name=".MiracleWebActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,7 +36,7 @@
             android:resource="@drawable/logo" />
 
         <service
-            android:name=".fcm.MyFirebaseMessagingService"
+            android:name=".fcm.MyFirebaseService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

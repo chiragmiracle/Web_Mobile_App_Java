@@ -31,7 +31,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-public class MiracleWebActivity extends AppCompatActivity implements MiracleWebView.Listener, SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends AppCompatActivity implements MiracleWebView.Listener, SwipeRefreshLayout.OnRefreshListener {
 
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -70,7 +70,7 @@ public class MiracleWebActivity extends AppCompatActivity implements MiracleWebV
                 });
 
         refreshLayout = findViewById(R.id.refreshLayout);
-        refreshLayout.setOnRefreshListener(MiracleWebActivity.this);
+        refreshLayout.setOnRefreshListener(MainActivity.this);
         mWebView = findViewById(R.id.ll_webview);
         mWebView.setListener(this, this);
         mWebView.setGeolocationEnabled(false);
@@ -81,7 +81,7 @@ public class MiracleWebActivity extends AppCompatActivity implements MiracleWebV
             @Override
             public void onPageFinished(WebView view, String url) {
                 Log.e("THE_MIRACLE", "Finished loading: ");
-                Toast.makeText(MiracleWebActivity.this, "Finished loading", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Finished loading", Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -90,7 +90,7 @@ public class MiracleWebActivity extends AppCompatActivity implements MiracleWebV
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
                 Log.e("THE_MIRACLE", "title: " + title);
-                Toast.makeText(MiracleWebActivity.this, "title: " + title, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "title: " + title, Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -195,7 +195,7 @@ public class MiracleWebActivity extends AppCompatActivity implements MiracleWebV
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        MiracleWebActivity.super.onBackPressed();
+                        MainActivity.super.onBackPressed();
                     }
                 })
                 .setNegativeButton("No", null)
@@ -215,19 +215,19 @@ public class MiracleWebActivity extends AppCompatActivity implements MiracleWebV
     @Override
     public void onPageError(int errorCode, String description, String failingUrl) {
         Log.e("THE_MIRACLE", "onPageError(errorCode = " + errorCode + ",  description = " + description + ",  failingUrl = " + failingUrl + ")");
-        Toast.makeText(MiracleWebActivity.this, "onPageError(errorCode = " + errorCode + ",  description = " + description + ",  failingUrl = " + failingUrl + ")", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "onPageError(errorCode = " + errorCode + ",  description = " + description + ",  failingUrl = " + failingUrl + ")", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDownloadRequested(String url, String suggestedFilename, String mimeType, long contentLength, String contentDisposition, String userAgent) {
         Log.e("THE_MIRACLE", "onDownloadRequested(url = " + url + ",  suggestedFilename = " + suggestedFilename + ",  mimeType = " + mimeType + ",  contentLength = " + contentLength + ",  contentDisposition = " + contentDisposition + ",  userAgent = " + userAgent + ")");
-        Toast.makeText(MiracleWebActivity.this, "onDownloadRequested(url = " + url + ",  suggestedFilename = " + suggestedFilename + ",  mimeType = " + mimeType + ",  contentLength = " + contentLength + ",  contentDisposition = " + contentDisposition + ",  userAgent = " + userAgent + ")", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "onDownloadRequested(url = " + url + ",  suggestedFilename = " + suggestedFilename + ",  mimeType = " + mimeType + ",  contentLength = " + contentLength + ",  contentDisposition = " + contentDisposition + ",  userAgent = " + userAgent + ")", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onExternalPageRequest(String url) {
         Log.e("THE_MIRACLE", "onExternalPageRequest(url = " + url + ")");
-        Toast.makeText(MiracleWebActivity.this, "onExternalPageRequest(url = " + url + ")", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "onExternalPageRequest(url = " + url + ")", Toast.LENGTH_SHORT).show();
     }
 
 }
