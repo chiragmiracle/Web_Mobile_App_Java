@@ -4,7 +4,7 @@
 
 # Screenshots
 
-![ANDROID WEBVIEW](https://imgur.com/cKhHG42.jpeg)
+![ANDROID WEBVIEW](https://imgur.com/AhJesno.jpeg)
 
 # Configurations
 
@@ -12,13 +12,13 @@
 
 - Change package name in  ```app/build.gradle```
 
-```json
+```gradle
 applicationId "com.miracle.webmobile"
 ```
 
 - Replace with your package name
 
-```json
+```gradle
 applicationId "your.package.name"
 ```
 
